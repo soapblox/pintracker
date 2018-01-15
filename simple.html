@@ -1,0 +1,492 @@
+<html>
+<head>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="score.css">
+        <script
+              src="https://code.jquery.com/jquery-3.2.1.min.js"
+              integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+              crossorigin="anonymous"></script>    
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>  
+        
+
+
+
+    <script>
+
+        // Handle on child window
+        var obsWindow = null;
+
+        // global player array and Id counter
+        var players = new Array();
+        var playerId = 0;
+
+        // bounty holder
+        var bountyArray = new Array();
+        var bountyId = 0;
+
+        var hideBountyBoard = false;
+
+        function Person(name, theDesc) {
+            this.name = name;
+            this.score = 0;
+            this.description = theDesc;
+            this.playerId = playerId++;
+            this.deleted = false;
+            this.bounties = new Array();
+        }
+
+        function Bounty(desc) {
+            this.description = desc;
+            this.bountyId = bountyId++;
+            this.deleted = false;
+        }
+
+        function getPlayerById(theId) {
+            console.log("getPlayerById : " + theId);
+            if (players) {
+                for (var i = 0; i < players.length; i++) {
+                    if (players[i].playerId == parseInt(theId)) {
+                        console.log("returning player.....")
+                        console.log(players[i]);
+                        return players[i];
+                    }
+                }
+            }
+        }
+
+        function getBountyById(theId) {
+            console.log("getBountyById : " + theId);
+            if (bountyArray) {
+                for (var i = 0; i < bountyArray.length; i++) {
+                    if (bountyArray[i].bountyId == parseInt(theId)) {
+                        console.log("returning bounty.....")
+                        console.log(bountyArray[i]);
+                        return bountyArray[i];
+                    }
+                }
+            }
+        }        
+
+        Person.prototype.addScore = function(addValue) {
+            this.score += parseInt(addValue);        
+        }
+
+        function addBounty() {
+            var bountyName = $("#bountyText").val();
+            console.log(bountyName);
+
+            if (bountyName == null || bountyName.length == 0) {
+                console.log("no bounty, not adding... ");
+                return;
+            }
+
+            // Add bounty
+            bountyArray.push(new Bounty($("#bountyText").val()));
+
+            $("#bountyText").val("");
+
+            repaint();             
+        }
+
+        function addPlayer() {
+            var playerName = $("#playerName").val();
+
+            if (playerName == null || playerName.length == 0) {
+                console.log("no value entered, not adding");
+                return;
+            }
+
+            var newPlayer = new Person(playerName, $("#playerText").val());
+            players.unshift(newPlayer);
+
+            $("#playerName").val("");
+            $("#playerText").val("");
+            $("#playerName").focus();
+
+            repaint();
+        }
+
+        function givePoints() {
+            for (var i = 0; i < players.length; i++) {
+                var newScore = $("#score" + i).value; 
+                players[i].addScore(newScore);
+            }
+
+            repaint();
+        }
+
+        function doPoint(theObj) {
+                        
+            console.log("doPoint for id: " + theId);
+            
+            if (theObj) {
+                if (theObj.id.indexOf('plus') == 0) {
+                    var theId = theObj.id.substring(4);
+                    var p = getPlayerById(theId);
+                    p.addScore(1);
+                }
+
+                if (theObj.id.indexOf('minus') == 0) {
+                    var theId = theObj.id.substring(5);
+                    var p = getPlayerById(theId);
+                    p.addScore(-1);
+                }
+            }
+
+            repaint();           
+        }
+
+        function editPlayer(theObj) {
+            
+            if (theObj) {
+
+                console.log(theObj.id);
+                var parsedId = theObj.id.substring(9);
+
+                console.log(getPlayerById(parsedId));
+                var p = getPlayerById(parsedId);
+                $("#editName").val(p.name);
+                $("#editText").val(p.description);
+                $('input[name=editPlayerId]').val(p.playerId);
+                $("#editPlayer").dialog("open");
+            }
+        }
+
+        function editBounty(theObj) {
+            if (theObj) {
+                console.log("in editBounty: " + theObj.id);
+                var parsedId = theObj.id.substring(9);
+
+                console.log(getBountyById(parsedId));
+                var b = getBountyById(parsedId);
+                $("#editBountyText").val(b.description);
+                $('input[name=editBountyId]').val(b.bountyId);
+                $("#editBounty").dialog("open");   
+            }
+        }
+
+        function saveBounty() {
+            var theId = $("#editBountyId").val();
+            console.log("saveBounty: theId: " + theId);
+
+            var b = getBountyById(theId);
+
+            if ($("#editBountyDelete").prop('checked')) {
+                console.log("delete this bounty: " + theId);
+                b.deleted = true;
+            }
+            else {
+                b.description = $("#editBountyText").val();
+            }
+
+            // clear the form
+            $("#editBountyText").val("");
+            $("#editBountyDelete").prop('checked', false);
+
+            // close dialog
+            $("#editBounty").dialog("close"); 
+
+            // repaint
+            repaint();
+        }
+
+        function saveEdit() {
+            var theId = $("#editPlayerId").val();
+            console.log("saveEdit: theId: " + theId);
+
+            var p = getPlayerById(theId);
+
+            if ($("#editDelete").prop('checked')) {
+                console.log("delete this guy: " + theId);
+                p.deleted = true;
+
+            }
+            else {
+                // it's updating the current record
+                p.name = $("#editName").val();
+                p.description = $("#editText").val();
+            }
+
+            // clear the form
+            $("#editName").val("");
+            $("#editText").val("");
+            $("#editDelete").prop('checked', false);
+
+            // close dialog
+            $("#editPlayer").dialog("close"); 
+
+            repaint();
+        }
+
+        function repaint() {
+            // repaint
+            drawScoreboard(players);
+            drawScores(players);  
+
+            // repaint OBS window
+            refreshObsWindow();
+        }
+
+        function drawScores(thePlayers) {
+            var theString = "<div>Players</div>";
+            for (var i = 0; i < thePlayers.length; i++) {
+                if (!thePlayers[i].deleted) {
+                    theString += "<div>" + thePlayers[i].name + " <button onclick='doPoint(this)' id='plus" + thePlayers[i].playerId + "'>+</button><button  onclick='doPoint(this)'id='minus" + thePlayers[i].playerId + "'>-</button>";   
+                    theString += "<button onclick='editPlayer(this)' id='playerId-"  + thePlayers[i].playerId + "'>edit</button>";
+
+                    theString += drawBountyUi(thePlayers[i]);
+                }
+            }   
+
+            theString += drawBountyEdit();
+
+            $("#addScores").html(theString);
+        }
+
+        function applyBounty(pId, bId) {
+            console.log("in applyBounty, playerId: " + pId + ", bountyId: " + bId);
+            var p = getPlayerById(pId);
+            console.log(p);
+
+            var found = false;
+
+            // if it exists remove it
+            for (var i = 0; i < p.bounties.length; i++) {
+                if (p.bounties[i] == bId) {
+                    p.bounties.splice(i, 1);
+                    found = true;
+                    p.addScore(-1);
+                }
+            }
+
+            // else we add it in
+            if (!found) {
+                p.bounties.push(bId);
+                p.addScore(1);
+            }
+
+            repaint();
+        }
+
+        function drawBountyUi(thePlayer) {
+            var theString  = "";
+            if (thePlayer && bountyArray) {
+                for (var i = 0; i < bountyArray.length; i++) {
+                    if (!bountyArray[i].deleted) {
+                        if (hasBounty(thePlayer, bountyArray[i].bountyId)) {
+                            theString += '<input type="checkbox" onclick="applyBounty(' + thePlayer.playerId + ', ' + bountyArray[i].bountyId + ')" checked="checked">';
+                        }
+                        else {
+                            theString += '<input type="checkbox" onclick="applyBounty(' + thePlayer.playerId + ', ' + bountyArray[i].bountyId + ')">';
+                        }
+                    }
+                }
+            }
+
+            return theString;
+        }
+
+        function drawScoreboard(thePlayers) {
+            console.log("in drawScoreboard");
+            var theString = "<ul class='scoreboard'>";
+            for (var i = 0; i < thePlayers.length; i++) {
+                if (!thePlayers[i].deleted) {
+                    theString += "<li class='simpleScore'><div class='simpleName'>" + thePlayers[i].name + "</div>" +
+                        "<div class='simplePoints'>" + thePlayers[i].score + "</div><div class='simpleDescription'></div>";
+                    
+                    if (!hideBountyBoard) {
+                        theString += drawBountyScore(thePlayers[i]);
+                    }
+
+                    theString += "</li>";
+                }
+            }
+
+            theString += '</ul>';
+
+            $("#scoreboard").html(theString);
+
+            $(".sexyBox").checkboxradio({
+                    
+            });
+
+            if (!hideBountyBoard) {
+                drawBountyBoard(bountyArray);
+            }
+            else {
+                $("#bountyBoard").html("");
+            }
+
+            return theString;
+        }
+
+        function hasBounty(thePlayer, bountyId) {
+            if (thePlayer && thePlayer.bounties && thePlayer.bounties.length > 0) {
+                for (var i = 0; i < thePlayer.bounties.length; i++) {
+                    console.log("hasBounty: " + thePlayer.bounties[i] + ", " + bountyId);
+                    if (thePlayer.bounties[i] == bountyId) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        function drawBountyScore(thePlayer) {
+            console.log("in drawBountyScore...");
+
+            var theString = "<div class='bountyScoreList'>";
+            for (var i = 0; i < bountyArray.length; i++) {
+                if (!bountyArray[i].deleted) {
+
+                    if (hasBounty(thePlayer, bountyArray[i].bountyId)) {
+                        theString += "<label for='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'></label><input type='checkbox'  class='sexyBox' checked='true' id='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "' />";    
+                    }
+                    else {
+                        theString += "<label for='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'> </label><input type='checkbox'  class='sexyBox' id='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'/>";    
+                    }
+                }
+            }
+
+            theString += "</div>";
+
+            return theString;
+        }
+
+        function drawBountyBoard(theBountyArray) {
+            console.log("in drawBountyBoard");
+
+            var theString = "";
+
+            theString += "<div class='bountyBoard'><div class='bountyTitle'>Bounty</div>";
+
+            theString += "<div class='bountyList'>";
+            for (var i = 0; i < bountyArray.length; i++) {
+                if (!bountyArray[i].deleted) {
+                    theString += "<p class='bountyDescription'>" + bountyArray[i].description + "</p>";
+                }
+            }
+
+            theString += '</div>';
+
+            theString += "</div>";
+
+            $("#bountyBoard").html(theString);
+
+            return theString;
+        }
+
+        function drawBountyEdit() {
+            console.log("in drawBountyEdit");
+            var theString = "<div>Bounties</div>";
+            for (var i = 0; i < bountyArray.length; i++) {
+                if (!bountyArray[i].deleted) {
+                    theString += "<div>" + bountyArray[i].description + "<button onclick='editBounty(this)' id='bountyId-" + bountyArray[i].bountyId + "'>edit</button></div>";
+                }
+            }
+
+            return theString;
+            
+        }
+
+        function openObsWindow() {
+            obsWindow = window.open("obsScore.html");
+        }
+
+        function refreshObsWindow() {
+            if (obsWindow) {
+                obsWindow.location.reload();
+            }
+        }
+
+        function doHideBounty() {
+            if ($("#hideBounty").prop('checked')) {
+                hideBountyBoard = true;
+            }
+            else {
+                hideBountyBoard = false;
+            }
+
+            console.log("after do hide" + hideBountyBoard);
+
+            repaint();
+        }
+
+
+        $( 
+            function() {
+                $("#editPlayer").dialog({
+                    autoOpen: false
+                });
+
+                $("#editBounty").dialog({
+                    autoOpen: false
+                })
+
+            }
+
+        );
+
+
+        
+    </script>
+
+</head>
+<body>
+    <div id="bountyBoard"></div>
+
+
+    <div id="scoreboard"></div>
+
+
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+
+
+
+    <div id="addPlayers">
+        <p><a href="javascript:openObsWindow()">Open OBS Window</a></p>
+        <p>
+            Initials: <input type="text" id="playerName" size="5" maxlength="5"> 
+            <button onclick="addPlayer()">Add Player</button>
+        </p>
+        <p>Bounty:<br /> 
+            <textarea id="bountyText"></textarea>
+            <button onclick="addBounty()">Add Bounty</button><br />
+            <input type="checkbox" id="hideBounty" onclick="doHideBounty()" /> - Hide Bounties
+        </p>        
+    </div>
+
+    <div id="addScores">
+
+    </div>
+
+    <div id="editPlayer">
+        <p>Edit Player</p>
+        <p>name: <input type="text" id="editName" /></p>
+        <p>text: <input type="text" id="editText" /></p>
+        <p><input type="checkbox" id="editDelete" name="editDelete"> Delete? </p>
+
+        <p><button onclick="saveEdit()">save</button></p>
+        <input type="hidden" name="editPlayerId" id="editPlayerId" />
+    </div>
+
+    <div id="editBounty">
+        <p>Edit Bounty</p>
+        <p>Bounty:<br />
+          <textarea id="editBountyText"></textarea>
+        <p><input type="checkbox" id="editBountyDelete" name="editBountyDelete" > Delete? </p>
+
+        <p><button onclick="saveBounty()">save</button></p>
+        <input type="hidden" name="editBountyId" id="editBountyId" />
+    </div>    
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+<html>
+<head>
+    <link rel="stylesheet" href="score.css">
+</head>
+<body>
+    <div id="scoreboard"></div>
+    <script>
+        console.log(window.opener.players);
+        console.log(window.opener.drawScoreboard(window.opener.players));
+        document.getElementById("scoreboard").innerHTML = window.opener.drawScoreboard(window.opener.players);
+    </script>
+    
+</body>
+</html>

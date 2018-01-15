@@ -1,0 +1,118 @@
+body {
+    background-color: green;
+}
+
+ul {
+    list-style:none;
+    padding-left:0;
+}​
+
+.scoreboard {
+    position: relative;
+}
+
+li {
+    list-style-position:inside;
+}
+
+/* Controls the size of the checkbox borders */
+.ui-checkboxradio-label {
+    padding: 1px;
+    border-color:  #000;
+    background-color: #000;
+}
+
+/* Color of the bounty checkbox when clicked */
+.ui-state-active .ui-icon-background {
+    background-color: #F00;
+}
+
+/* Box containing all the bounties in the widget */
+.bountyBoard {
+    background-color: #000;
+    width: 250px;
+    font-family: Calibri; 
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 2px solid #4D4D4D;
+}
+
+/* font color of the bounty description in the widget */
+.bountyDescription {
+    color: #9ea0a2; 
+}
+
+/* indents the second line on the bounty description */
+p.bountyDescription {
+    text-indent: -20px;
+    padding-left: 25px;
+}
+
+/* controls the "Bounty" title bar on the widget */
+.bountyTitle {
+    color: #9ea0a2; 
+    border-bottom: 2px solid #E3D01E;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/* controls the editing UI box */
+#addPlayers {
+    border: 1px solid #000;
+    font-family: Calibri;
+    width: 500px;
+}
+
+/* controls the "scoreboard" box */
+.scoreboard {
+    background-color: #000;
+    width: 250px;
+    font-family: Calibri;
+    border-left: 2px solid #4D4D4D;
+    border-right: 2px solid #4D4D4D;
+}
+
+/* Score rows in the widget */
+.simpleScore {
+    border-top: 2px solid #4D4D4D;
+    border-bottom: 2px solid #4D4D4D;
+    margin: 0 0 5px 0;
+}
+
+/* controls how the name/initials appear in the "scoreboard" widget */
+.simpleName {
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+    text-transform: uppercase;
+    color: #E3D01E;
+    border: 2px solid  #E3D01E;
+    width: 50px;
+    padding: 3px;
+}
+
+/* controls where the points are rendered in the "scoreboard" widget" */
+.simplePoints {    
+    position: absolute;
+    margin-top: -26px;
+    margin-left: 90px;
+    width: 20px;
+    color: #9ea0a2; 
+}
+
+/* controls where the bounty checkboxes inside the "scoreboard" widget */
+.bountyScoreList {
+    position: absolute;
+    margin-top: -27px;
+    margin-left: 120px;
+    color: #9ea0a2;  
+    list-style:none;   
+}
+
+/* Not used anymore */
+.simpleDescription {
+    position: absolute;
+    margin-top: -26px;
+    margin-left: 100px;
+    color: #9ea0a2; 
+}
