@@ -2,11 +2,10 @@
 <head>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="score.css">
-        <script
-              src="https://code.jquery.com/jquery-3.2.1.min.js"
-              integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-              crossorigin="anonymous"></script>    
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>  
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>    
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>  
         
 
 
@@ -116,7 +115,7 @@
         }
 
         function doPoint(theObj) {
-                        
+
             console.log("doPoint for id: " + theId);
             
             if (theObj) {
@@ -452,21 +451,29 @@
 
 
     <div id="addPlayers">
-        <p><a href="javascript:openObsWindow()">Open OBS Window</a></p>
-        <p>
-            Initials: <input type="text" id="playerName" size="5" maxlength="5"> 
-            <button onclick="addPlayer()">Add Player</button>
-        </p>
-        <p>Bounty:<br /> 
-            <textarea id="bountyText"></textarea>
-            <button onclick="addBounty()">Add Bounty</button><br />
-            <input type="checkbox" id="hideBounty" onclick="doHideBounty()" /> - Hide Bounties
-        </p>        
+        <table>
+                <tr>
+                    <td>
+                            <p><a href="javascript:openObsWindow()">Open OBS Window</a></p>
+                            <p>
+                                Initials: <input type="text" id="playerName" size="5" maxlength="5"> 
+                                <button onclick="addPlayer()">Add Player</button>
+                            </p>
+                            <p>Bounty:<br /> 
+                                <textarea id="bountyText"></textarea>
+                                <button onclick="addBounty()">Add Bounty</button><br />
+                                <input type="checkbox" id="hideBounty" onclick="doHideBounty()" /> - Hide Bounties
+                            </p>        
+                    </td>
+                    <td>
+                        <div id="addScores">
+
+                        </div>
+                    </td>
+                </tr>
+        </table>        
     </div>
 
-    <div id="addScores">
-
-    </div>
 
     <div id="editPlayer">
         <p>Edit Player</p>
