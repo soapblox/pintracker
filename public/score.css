@@ -1,0 +1,186 @@
+body {
+    background-color: green;
+}
+
+ul {
+    list-style:none;
+    padding-left:0;
+}​
+
+.scoreboard {
+    position: relative;
+}
+
+li {
+    list-style-position:inside;
+}
+
+/* Controls the size of the checkbox borders */
+.ui-checkboxradio-label {
+    padding: 1px;
+    border-color:  #000;
+    background-color: #000;
+}
+
+/* Color of the bounty checkbox when clicked */
+.ui-state-active .ui-icon-background {
+    background-color: #F00;
+}
+
+/* Box containing all the bounties in the widget */
+.bountyBoard {
+    background-color: #000;
+    width: 250px;
+    font-family: Calibri; 
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 2px solid #4D4D4D;
+}
+
+/* font color of the bounty description in the widget */
+.bountyDescription {
+    color: #9ea0a2; 
+}
+
+/* indents the second line on the bounty description */
+p.bountyDescription {
+    text-indent: -20px;
+    padding-left: 25px;
+}
+
+/* controls the "Bounty" title bar on the widget */
+.bountyTitle {
+    color: #9ea0a2; 
+    border-bottom: 2px solid #E3D01E;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/* controls the editing UI box */
+#addPlayers {
+    border: 1px solid #000;
+    font-family: Calibri;
+    width: 800px;
+}
+
+/* controls the "scoreboard" box */
+.scoreboard {
+    background-color: #000;
+    width: 250px;
+    font-family: Calibri;
+    border-left: 2px solid #4D4D4D;
+    border-right: 2px solid #4D4D4D;
+}
+
+/* Score rows in the widget */
+.simpleScore {
+    border-top: 2px solid #4D4D4D;
+    border-bottom: 2px solid #4D4D4D;
+    margin: 0 0 5px 0;
+}
+
+/* controls how the name/initials appear in the "scoreboard" widget */
+.simpleName {
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+    text-transform: uppercase;
+    color: #E3D01E;
+    border: 2px solid  #E3D01E;
+    width: 50px;
+    padding: 3px;
+}
+
+/* controls where the points are rendered in the "scoreboard" widget" */
+.simplePoints {    
+    position: absolute;
+    margin-top: -26px;
+    margin-left: 90px;
+    width: 20px;
+    color: #9ea0a2; 
+}
+
+/* controls where the bounty checkboxes inside the "scoreboard" widget */
+.bountyScoreList {
+    position: absolute;
+    margin-top: -27px;
+    margin-left: 120px;
+    color: #9ea0a2;  
+    list-style:none;   
+}
+
+/* Not used anymore */
+.simpleDescription {
+    position: absolute;
+    margin-top: -26px;
+    margin-left: 100px;
+    color: #9ea0a2; 
+}
+
+
+
+/* The container */
+.container {
+    /* display: block; */
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 4;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+    background-color: rgb(243, 33, 33);
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+    left: 4px;
+    top: 0px;
+    width: 5px;
+    height: 10px;
+    border: solid #ccc;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
