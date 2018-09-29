@@ -1,14 +1,96 @@
 <html>
+
 <head>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="score.css">
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
-            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"></script>    
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>  
-        
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
+
+
+
+
+</head>
+
+<body>
+    <div id="bountyBoard"></div>
+
+
+    <div id="scoreboard"></div>
+
+
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+
+
+
+    <div id="addPlayers">
+        <table>
+            <tr>
+                <td>
+                    <p><a href="javascript:openObsWindow()">Open OBS Window</a></p>
+                    <p>
+                        Initials: <input type="text" id="playerName" size="5" maxlength="5">
+                        <button onclick="addPlayer()">Add Player</button>
+                    </p>
+                    <p>Bounty:<br />
+                        <textarea id="bountyText"></textarea>
+                        <button onclick="addBounty()">Add Bounty</button><br />
+                        <input type="checkbox" id="hideBounty" onclick="doHideBounty()" /> - Hide Bounties
+                    </p>
+                </td>
+                <td>
+                    <div id="addScores">
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div id="editPlayer">
+        <p>Edit Player</p>
+        <p>name: <input type="text" id="editName" /></p>
+        <p>text: <input type="text" id="editText" /></p>
+        <p><input type="checkbox" id="editDelete" name="editDelete"> Delete? </p>
+
+        <p><button onclick="saveEdit()">save</button></p>
+        <input type="hidden" name="editPlayerId" id="editPlayerId" />
+    </div>
+
+    <div id="editBounty">
+        <p>Edit Bounty</p>
+        <p>Bounty:<br />
+            <textarea id="editBountyText"></textarea>
+            <p><input type="checkbox" id="editBountyDelete" name="editBountyDelete"> Delete? </p>
+
+            <p><button onclick="saveBounty()">save</button></p>
+            <input type="hidden" name="editBountyId" id="editBountyId" />
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            window['taco'] = socket;
+            $('#start').click(function () {
+                socket.emit('start', 'start');
+            });
+
+            socket.on('chat message', function (msg) {
+                $('#messages').append($('<li>').text(msg));
+            });
+
+        });
+    </script>
 
     <script>
 
@@ -64,10 +146,10 @@
                     }
                 }
             }
-        }        
+        }
 
-        Person.prototype.addScore = function(addValue) {
-            this.score += parseInt(addValue);        
+        Person.prototype.addScore = function (addValue) {
+            this.score += parseInt(addValue);
         }
 
         function addBounty() {
@@ -84,7 +166,7 @@
 
             $("#bountyText").val("");
 
-            repaint();             
+            repaint();
         }
 
         function addPlayer() {
@@ -107,7 +189,7 @@
 
         function givePoints() {
             for (var i = 0; i < players.length; i++) {
-                var newScore = $("#score" + i).value; 
+                var newScore = $("#score" + i).value;
                 players[i].addScore(newScore);
             }
 
@@ -117,7 +199,7 @@
         function doPoint(theObj) {
 
             console.log("doPoint for id: " + theId);
-            
+
             if (theObj) {
                 if (theObj.id.indexOf('plus') == 0) {
                     var theId = theObj.id.substring(4);
@@ -132,11 +214,11 @@
                 }
             }
 
-            repaint();           
+            repaint();
         }
 
         function editPlayer(theObj) {
-            
+
             if (theObj) {
 
                 console.log(theObj.id);
@@ -160,7 +242,7 @@
                 var b = getBountyById(parsedId);
                 $("#editBountyText").val(b.description);
                 $('input[name=editBountyId]').val(b.bountyId);
-                $("#editBounty").dialog("open");   
+                $("#editBounty").dialog("open");
             }
         }
 
@@ -183,7 +265,7 @@
             $("#editBountyDelete").prop('checked', false);
 
             // close dialog
-            $("#editBounty").dialog("close"); 
+            $("#editBounty").dialog("close");
 
             // repaint
             repaint();
@@ -212,15 +294,19 @@
             $("#editDelete").prop('checked', false);
 
             // close dialog
-            $("#editPlayer").dialog("close"); 
+            $("#editPlayer").dialog("close");
 
             repaint();
         }
 
         function repaint() {
             // repaint
-            drawScoreboard(players);
-            drawScores(players);  
+            var poop = drawScoreboard(players);
+            drawScores(players);
+
+            console.log(window['taco']);
+
+            window['taco'].emit('start', poop);
 
             // repaint OBS window
             refreshObsWindow();
@@ -230,12 +316,12 @@
             var theString = "<div>Players</div>";
             for (var i = 0; i < thePlayers.length; i++) {
                 if (!thePlayers[i].deleted) {
-                    theString += "<div>" + thePlayers[i].name + " <button onclick='doPoint(this)' id='plus" + thePlayers[i].playerId + "'>+</button><button  onclick='doPoint(this)'id='minus" + thePlayers[i].playerId + "'>-</button>";   
-                    theString += "<button onclick='editPlayer(this)' id='playerId-"  + thePlayers[i].playerId + "'>edit</button>";
+                    theString += "<div>" + thePlayers[i].name + " <button onclick='doPoint(this)' id='plus" + thePlayers[i].playerId + "'>+</button><button  onclick='doPoint(this)'id='minus" + thePlayers[i].playerId + "'>-</button>";
+                    theString += "<button onclick='editPlayer(this)' id='playerId-" + thePlayers[i].playerId + "'>edit</button>";
 
                     theString += drawBountyUi(thePlayers[i]);
                 }
-            }   
+            }
 
             theString += drawBountyEdit();
 
@@ -268,7 +354,7 @@
         }
 
         function drawBountyUi(thePlayer) {
-            var theString  = "";
+            var theString = "";
             if (thePlayer && bountyArray) {
                 for (var i = 0; i < bountyArray.length; i++) {
                     if (!bountyArray[i].deleted) {
@@ -292,7 +378,7 @@
                 if (!thePlayers[i].deleted) {
                     theString += "<li class='simpleScore'><div class='simpleName'>" + thePlayers[i].name + "</div>" +
                         "<div class='simplePoints'>" + thePlayers[i].score + "</div><div class='simpleDescription'></div>";
-                    
+
                     if (!hideBountyBoard) {
                         theString += drawBountyScore(thePlayers[i]);
                     }
@@ -306,11 +392,11 @@
             $("#scoreboard").html(theString);
 
             $(".sexyBox").checkboxradio({
-                    
+
             });
 
             if (!hideBountyBoard) {
-                drawBountyBoard(bountyArray);
+                theString = drawBountyBoard(bountyArray) + theString;
             }
             else {
                 $("#bountyBoard").html("");
@@ -340,10 +426,12 @@
                 if (!bountyArray[i].deleted) {
 
                     if (hasBounty(thePlayer, bountyArray[i].bountyId)) {
-                        theString += "<label for='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'></label><input type='checkbox'  class='sexyBox' checked='true' id='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "' />";    
+                        theString += '<label class="container"><input type="checkbox" checked="checked"><span class="checkmark"></span></label>';
+                        // theString += "<label for='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'></label><input type='checkbox'  class='sexyBox' checked='true' id='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "' />";
                     }
                     else {
-                        theString += "<label for='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'> </label><input type='checkbox'  class='sexyBox' id='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'/>";    
+                        theString += '<label class="container"><input type="checkbox"><span class="checkmark"></span></label>';
+                        //theString += "<label for='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'> </label><input type='checkbox'  class='sexyBox' id='box-" + thePlayer.playerId + "-" + bountyArray[i].bountyId + "'/>";
                     }
                 }
             }
@@ -386,7 +474,7 @@
             }
 
             return theString;
-            
+
         }
 
         function openObsWindow() {
@@ -413,8 +501,8 @@
         }
 
 
-        $( 
-            function() {
+        $(
+            function () {
                 $("#editPlayer").dialog({
                     autoOpen: false
                 });
@@ -428,72 +516,8 @@
         );
 
 
-        
+
     </script>
-
-</head>
-<body>
-    <div id="bountyBoard"></div>
-
-
-    <div id="scoreboard"></div>
-
-
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-
-
-
-    <div id="addPlayers">
-        <table>
-                <tr>
-                    <td>
-                            <p><a href="javascript:openObsWindow()">Open OBS Window</a></p>
-                            <p>
-                                Initials: <input type="text" id="playerName" size="5" maxlength="5"> 
-                                <button onclick="addPlayer()">Add Player</button>
-                            </p>
-                            <p>Bounty:<br /> 
-                                <textarea id="bountyText"></textarea>
-                                <button onclick="addBounty()">Add Bounty</button><br />
-                                <input type="checkbox" id="hideBounty" onclick="doHideBounty()" /> - Hide Bounties
-                            </p>        
-                    </td>
-                    <td>
-                        <div id="addScores">
-
-                        </div>
-                    </td>
-                </tr>
-        </table>        
-    </div>
-
-
-    <div id="editPlayer">
-        <p>Edit Player</p>
-        <p>name: <input type="text" id="editName" /></p>
-        <p>text: <input type="text" id="editText" /></p>
-        <p><input type="checkbox" id="editDelete" name="editDelete"> Delete? </p>
-
-        <p><button onclick="saveEdit()">save</button></p>
-        <input type="hidden" name="editPlayerId" id="editPlayerId" />
-    </div>
-
-    <div id="editBounty">
-        <p>Edit Bounty</p>
-        <p>Bounty:<br />
-          <textarea id="editBountyText"></textarea>
-        <p><input type="checkbox" id="editBountyDelete" name="editBountyDelete" > Delete? </p>
-
-        <p><button onclick="saveBounty()">save</button></p>
-        <input type="hidden" name="editBountyId" id="editBountyId" />
-    </div>    
-
 </body>
+
 </html>
