@@ -1,0 +1,112 @@
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="timer.js"></script>
+    <link rel="stylesheet" href="score.css">    
+</head>
+
+<body>
+    <div id="pin"></div>
+
+
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <div style="display: none">
+        <button id="start" accesskey="/">Start (Alt+/)</button>
+        <button id="clear" accesskey="*">Clear (Alt+*)</button>
+    </div>
+
+    <script>
+        var h1 = document.getElementsByTagName('h1')[0],
+            start = document.getElementById('start'),
+            stop = document.getElementById('stop'),
+            clear = document.getElementById('clear'),
+            seconds = 0, minutes = 0, hours = 0,
+            t;
+
+
+        var uiPinTimer = null;
+
+        var started = false;
+        var stoppedTime = 0;
+
+        var startTime = 0;
+
+
+        function uiTimer() {
+            uiPinTimer.timer();
+        }
+
+        /* Clear button */
+        $("#clear").on('click', function () {
+
+            if (started) {
+                console.log("can't clear started timer...");
+                return;
+            }
+
+            started = false;
+            stoppedTime = 0;
+            startTime = 0;
+            h1.textContent = timeFormatter(0);
+            uiPinTimer.clear();
+        });
+
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            uiPinTimer = new PinTimer();
+            //h1.textContent = timeFormatter(0);
+
+            socket.on('chat message', function (msg) {
+                $('#messages').append($('<li>').text(msg));
+            });
+
+            socket.on('startTimer', function (msg) {
+                uiTimer();
+
+
+                if (uiPinTimer.started == false) {
+                    var uiTimerVal = uiPinTimer.getRunTime();
+                    console.log(uiTimerVal);
+                    h1.textContent = timeFormatter(uiTimerVal);
+                    console.log("stopped the timer, send back the time: " + uiTimerVal);
+
+                    socket.emit('uiTimerTime', uiTimerVal);
+                }
+            });
+
+            socket.on('clearTimer', function (msg) {
+                console.log("in clear timer");
+                $('#clear').trigger("click");
+            });
+
+            socket.on('paint', function (msg) {
+                console.log("in paint...");
+                console.log(msg);
+            })
+
+            socket.on('start', function (msg) {
+                console.log("in start");
+                $('#pin').html(msg);
+
+                h1 = document.getElementsByTagName('h1')[0];
+            });
+
+            socket.on('connect', function () {
+                console.log('connected');
+                socket.emit('hello', 'hello');
+            });
+        });
+    </script>
+</body>
+
+</html>
