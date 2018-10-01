@@ -21,6 +21,11 @@ app.get('/simple', function (req, res) {
     res.sendFile(__dirname + '/simple.html');
 });
 
+app.get('/timer', function (req, res) {
+    console.log("loading simple...");
+    res.sendFile(__dirname + '/timer.html');
+});
+
 io.on('connection', function (socket) {
     console.log('a user connected');
     socket.on('disconnect', function () {
@@ -41,6 +46,21 @@ io.on('connection', function (socket) {
         console.log(msg);
         currentState = msg;
         io.emit('start', msg);
+    })
+
+    socket.on('startTimer', function (msg) {
+        console.log('startTimer');
+        io.emit('startTimer', msg);
+    })
+
+    socket.on('uiTimerTime', function (msg) {
+        console.log('uiTimerTime:' + msg);
+        io.emit('uiTimerTime', msg);
+    })
+
+    socket.on('clearTimer', function (msg) {
+        console.log('clearTimer');
+        io.emit('clearTimer', msg);
     })
 });
 http.listen(3000, function () {
