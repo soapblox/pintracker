@@ -20,13 +20,40 @@
         var pinTimer = null;
         var h1;
         var uiTimerVal = 0;
+        var activeMode = "";
+        var started = false;
 
-        function timer() {
+        /*function timer() {
             pinTimer.timer();
-        }
+            console.log("timer()");
+
+            if (currentBestRun != null) {
+                //pinTimer.getSplit(currentBestRun.runTime);
+                console.log(started);
+                if (!started) {
+                    $("#splitDiff").show();
+                    var theText = pinTimer.getSplit(currentBestRun.runTime);
+                    console.log("theText: " + theText);
+                    $("#splitDiff").html(theText);
+                }
+            }
+        } */
 
         function toggleDiv(divName) {
             $("#" + divName).toggle();
+        }
+
+        function setMode(theMode) {
+            activeMode = theMode;
+
+            if (theMode == "bountyBot") {
+                $("#bountyBot").show();
+                $("#pinTimer").hide();
+            }
+            else if (theMode == "pinTimer") {
+                $("#bountyBot").hide();
+                $("#pinTimer").show();
+            }
         }
     </script>
 
@@ -41,8 +68,11 @@
 
     <br />
 
-    Bounty Bot (<a href="javascript:toggleDiv('addPlayers')">toggle</a>) <br />
-    <div id="addPlayers" class="widget" style="display: none">
+    Bounty Bot (<a href="javascript:toggleDiv('bountyBot')">toggle</a>) <input type="radio" name="pinTrackerWidget"
+        value="bountyBot" onclick="setMode('bountyBot')" /><br />
+    PinTimer (<a href="javascript:toggleDiv('pinTimer')">toggle</a>) <input type="radio" name="pinTrackerWidget" value="pinTimer"
+        onclick="setMode('pinTimer')" /><br />
+    <div id="bountyBot" class="widget" style="display: none">
         <table>
             <tr>
                 <td>
@@ -66,30 +96,28 @@
     </div>
 
 
-    pinTimer (<a href="javascript:toggleDiv('pinTimer')">toggle</a>) <br />
-    <div id="pinTimer" class="widget">
+
+    <div id="pinTimer" class="widget" style="display: none">
         <table>
             <tr>
-                <td>
-                    <p>
-                        Initials: <input type="text" id="pinTimerPlayerName" size="5" maxlength="5">
-                        <button onclick="addPlayer('pinTimer')">Add Player</button>
-                    </p>
-                    <p>
-                        Game: <input type="text" id="pinTimerGameName" /> <button onclick="setPinTimerGameName()">set</button>
-                    </p>
-                    <p>Objective:<br />
+                <td>PinTimer Editor (<a href="javascript:toggleDiv('pinTimerEditor')">toggle</a>)<br />
+                    <div id="pinTimerEditor">
+                        <p>
+                            Initials: <input type="text" id="pinTimerPlayerName" size="5" maxlength="5">
+                            <button onclick="addPlayer('pinTimer')">Add Player</button>
+                        </p>
+                        <p>Objective:<br />
 
-                        <textarea rows="5" cols="50" id="objectiveText"></textarea><br />
-                        <button onclick="addObjective()">Add Objective</button>
-                    </p>
+                            <textarea rows="5" cols="50" id="objectiveText"></textarea><br />
+                            <button onclick="addObjective()">Add Objective</button>
+                        </p>
+                    </div>
 
-                </td>
-                <td>
                     <div id="objectiveUi"></div><br />
-                    <button id="pinTimer-start" accesskey="/">Start (Alt+/)</button>
-                    <button id="pinTimer-clear" accesskey="*">Clear (Alt+*)</button>
-                    <button id="pinTimer-save" accesskey="-">Save</button>
+                    <button id="pinTimer-start" accesskey="/" disabled="true">Start (Alt+/)</button>
+                    <button id="pinTimer-save" accesskey="-" disabled="true">Save (Alt+-)</button>
+                    <button id="pinTimer-clear" accesskey="*" disabled="true">Clear (Alt+*)</button>
+
                 </td>
             </tr>
         </table>
@@ -118,36 +146,261 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        $(function () {
-            var socket = io();
-            window['taco'] = socket;
-            $('#start').click(function () {
-                socket.emit('start', 'start');
-            });
 
-            socket.on('chat message', function (msg) {
-                $('#messages').append($('<li>').text(msg));
-            });
 
-            socket.on('start', function (msg) {
-                console.log('got start');
-            });
 
-           socket.on('uiTimerTime', function (msg) {
-                console.log('got uiTimerVal: ' + msg + ", " + pinTimer.getRunTime());
-                uiTimerVal = msg;
-            });
 
-            socket.on('startTimer', function (msg) {
-                console.log('got startTimer');
-                timer();
-            });
 
-            socket.on('clearTimer', function (msg) {
-                console.log('got clearTimer');
-            });
 
-        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     </script>
 
     <script>
@@ -173,7 +426,8 @@
 
         var currentPlayerId = null;
 
-        var pinTimerGame = "";
+        // hold the current best run...
+        var currentBestRun = null;
 
         var hideBountyBoard = false;
 
@@ -422,13 +676,14 @@
 
         function repaint() {
             // repaint
-            drawScoreboard(players);
+            $("#pinTimerBoard").html(drawScoreboard(players));
+            //drawScoreboard(players);
             drawScores(players);
 
-            console.log(window['taco']);            
+            //console.log(window['taco']);
 
             // repaint OBS window
-            refreshObsWindow();
+            //refreshObsWindow();
         }
 
         function drawScores(thePlayers) {
@@ -446,15 +701,14 @@
 
             $("#addScores").html(theString);
 
-            console.log(drawObjectivesEdit());
+            //console.log(drawObjectivesEdit());
 
             $("#objectiveUi").html(drawObjectivesEdit());
         }
 
         function drawObjectivesEdit() {
 
-            var theString = "<p>Current Game: " + pinTimerGame + "</p>";
-            theString += "<div>Current objectives</div>";
+            var theString = "<div>Current objectives</div>";
 
             $.each(objectiveArray, function (i) {
                 theString += "<input id='pinTrackerObjectiveId-" + this.objectiveId + "' type='radio' name='currentObjective' value='" + this.objectiveId + "' onclick='setCurrentObjective(" + this.objectiveId + ")'>" + this.name + "<br />";
@@ -463,35 +717,48 @@
             theString += "<div>Current players</div>";
 
             $.each(players, function (i) {
-                theString += "<input id='pinTrackerCurrentPlayerId-" + players.name + " 'type='radio' name='currentPlayer' value='" + this.name + "' onclick='setCurrentPlayer(\"" + this.playerId + "\")'>" + this.name + "<br />";
+                if (this.playerId == currentPlayerId) {
+                    theString += "<input id='pinTrackerCurrentPlayerId-" + players.name + " 'type='radio' name='currentPlayer' value='"
+                        + this.name + "' onclick='setCurrentPlayer(\"" + this.playerId + "\")' checked='checked'>" + this.name + "<br />";
+                }
+                else {
+                    theString += "<input id='pinTrackerCurrentPlayerId-" + players.name + " 'type='radio' name='currentPlayer' value='"
+                        + this.name + "' onclick='setCurrentPlayer(\"" + this.playerId + "\")'>" + this.name + "<br />";
+                }
+
             });
 
 
             return theString;
         }
 
-        function setPinTimerGameName() {
-            pinTimerGame = $("#pinTimerGameName").val();
-
-            repaint();
-        }
-
         function setCurrentPlayer(playerId) {
             console.log("in setCurrentPlayer: " + playerId);
             currentPlayerId = playerId;
 
+            setTimerButtonState();
+
             // $("#pinTrackerObjectiveId-" + playerId).attr("checked", "checked");
 
-            drawScoreboard(players);
+            $("#pinTimerBoard").html(drawScoreboard(players));
         }
 
         function setCurrentObjective(objectiveId) {
             console.log("in setCurrentObjective: " + objectiveId);
             currentObjectiveId = objectiveId;
 
+            setTimerButtonState();
+
             // $("#pinTrackerObjectiveId-" + objectiveId).attr("checked", "checked");
 
-            drawScoreboard(players);
+            $("#pinTimerBoard").html(drawScoreboard(players));
+        }
+
+        function setTimerButtonState() {
+            if (currentObjectiveId != null && currentPlayerId != null) {
+                console.log("turn on start button")
+                $("#pinTimer-start").attr("disabled", false);
+            }
         }
 
         function applyBounty(pId, bId) {
@@ -539,79 +806,100 @@
 
         function drawScoreboard(thePlayers) {
             var theString = "";
-            /* console.log("in drawScoreboard");
-            var theString = "<ul class='scoreboard'>";
-            for (var i = 0; i < thePlayers.length; i++) {
-                if (!thePlayers[i].deleted) {
-                    theString += "<li class='simpleScore'><div class='simpleName'>" + thePlayers[i].name + "</div>" +
-                        "<div class='simplePoints'>" + thePlayers[i].score + "</div><div class='simpleDescription'></div>";
 
-                    if (!hideBountyBoard) {
-                        theString += drawBountyScore(thePlayers[i]);
+            if (activeMode == "bountyBot") {
+                console.log("in drawScoreboard");
+                var theString = "<ul class='scoreboard'>";
+                for (var i = 0; i < thePlayers.length; i++) {
+                    if (!thePlayers[i].deleted) {
+                        theString += "<li class='simpleScore'><div class='simpleName'>" + thePlayers[i].name + "</div>" +
+                            "<div class='simplePoints'>" + thePlayers[i].score + "</div><div class='simpleDescription'></div>";
+
+                        if (!hideBountyBoard) {
+                            theString += drawBountyScore(thePlayers[i]);
+                        }
+
+                        theString += "</li>";
                     }
-
-                    theString += "</li>";
                 }
+
+                theString += '</ul>';
+
+                $("#scoreboard").html(theString);
+
+                if (!hideBountyBoard) {
+                    theString = drawBountyBoard(bountyArray) + theString;
+                }
+                else {
+                    $("#bountyBoard").html("");
+                }
+
+            }
+            else if (activeMode == "pinTimer") {
+                theString += drawPinTimer();
             }
 
-            theString += '</ul>';
-
-            $("#scoreboard").html(theString);
-
-            if (!hideBountyBoard) {
-                theString = drawBountyBoard(bountyArray) + theString;
-            }
-            else {
-                $("#bountyBoard").html("");
-            } */
-
-            theString += drawPinTimer();
 
             window['taco'].emit('start', theString);
 
             return theString;
         }
 
-        function drawPinTimer() {
+        function drawPinTimer(showSplit) {
             console.log("in drawPinTimer");
 
             var theString = "<div class='bountyBoard'><div class='bountyTitle'>Speed Runs</div>";
 
-            //theString += "<p>Game: " + pinTimerGame + "</p>";
 
-            console.log("currentObjectiveId: " + currentObjectiveId);
 
+            //console.log("currentObjectiveId: " + currentObjectiveId);
+
+            // Draw the current objective
             if (currentObjectiveId != null) {
                 var theObj = getObjectiveById(currentObjectiveId);
 
-                console.log(getObjectiveById(currentObjectiveId).name);
+                // console.log(getObjectiveById(currentObjectiveId).name);
 
                 if (theObj) {
-                    theString += "<p class='bountyDescription'>Current objective: " + getObjectiveById(currentObjectiveId).name + "</p>";
+                    theString += "<div class='pinTimerText'>Objective: " + getObjectiveById(currentObjectiveId).name + "</div>";
                 }
             }
+
+
 
             if (currentPlayerId != null) {
                 var theObj = getPlayerById(currentPlayerId);
 
-                console.log(getPlayerById(currentPlayerId).name);
+                //console.log(getPlayerById(currentPlayerId).name);
 
                 if (theObj) {
-                    theString += "<p class='bountyDescription'>Current Player: " + getPlayerById(currentPlayerId).name + "</p>";
+                    theString += "<div class='pinTimerText'>Current Player: <span class='pinTimerName'>" + getPlayerById(currentPlayerId).name + "</span></div>";
                 }
             }
 
-            theString += "<h1 class='speedrunTimer'>" + timeFormatter(0) + "</h1>";
+            theString += "<div id='speedRunTimer' class='speedrunTimer'>" + timeFormatter(0) + "</div>";
 
+            theString += "<div id='splitDiff' class='splitDiff' style='display: note'>&nbsp;</div>";
+
+
+
+            //theString += "<div class='pinTimerLine'>&nbsp;</div>";
+
+
+            // draw time to beat
             var bestRun = getBestRun(currentObjectiveId);
-            var bestRunString = "---"
+
+            currentBestRun = bestRun;
+
+            var bestRunString = "<span class='pinTimerName'>---</span>";
             if (bestRun != undefined) {
                 bestRunString = timeFormatter(bestRun.runTime);
-                bestRunString += " (" + getPlayerById(bestRun.playerId).name + ")";
+                bestRunString += "&nbsp;<span class='pinTimerName'>" + getPlayerById(bestRun.playerId).name + "</span>";
             }
 
-            theString += "<p class='bountyDescription'>time to beat: " + bestRunString + "</p>";
-            theString += "<p class='bountyDescription'>personal best: ";
+            theString += "<div class='pinTimerText'>Time to Beat: " + bestRunString + "</div>";
+
+            theString += "<div class='pinTimerText'>Personal Best: ";
             var personalBestString = "---";
 
             var personalBest = getBestRunForPlayer(currentPlayerId, currentObjectiveId);
@@ -620,16 +908,16 @@
                 personalBestString = timeFormatter(personalBest.runTime);
             }
 
-            theString += personalBestString + "</p>";
+            theString += personalBestString + "</div>";
 
-            theString += "<p class='bountyTitle'>Previous Runs</p>";
+            theString += "<div class='bountyTitle'>Previous Runs</div>";
 
             var previousRuns = getPinRuns(currentPlayerId, currentObjectiveId);
-            var previousRunsString = "<p class='bountyDescription'>";
+            var previousRunsString = "<div class='pinTimerText'>";
 
             if (previousRuns != undefined && previousRuns.length > 0) {
                 for (var i = 0; i < previousRuns.length; i++) {
-                    previousRunsString += "<br />" + (i + 1) + ". " + timeFormatter(previousRuns[i].runTime);
+                    previousRunsString += (i + 1) + ". " + timeFormatter(previousRuns[i].runTime) + "<br />";
                 }
             }
             else {
@@ -637,15 +925,13 @@
             }
 
             theString += previousRunsString;
-            theString += "</p>";
-
-            $("#pinTimerBoard").html(theString);
+            theString += "</div>";
 
             theString += "</ul>";
 
-            h1 = document.getElementsByTagName('h1')[0];
-
             return theString;
+
+            //h1 = document.getElementsByTagName('h1')[0];
 
         }
 
@@ -807,63 +1093,118 @@
         }
 
 
-        $(
-            function () {
+        $(function () {
 
-                pinTimer = new PinTimer();
-                //h1.textContent = timeFormatter(0);
-                var started = false;
+            var socket = io();
+            window['taco'] = socket;
+            /* $('#start').click(function () {
+                 socket.emit('start', 'start');
+             });
+ 
+             socket.on('chat message', function (msg) {
+                 $('#messages').append($('<li>').text(msg));
+             });
+ 
+             socket.on('start', function (msg) {
+                 console.log('got start');
+             }); 
 
-                $("#editPlayer").dialog({
-                    autoOpen: false
-                });
+            socket.on('uiTimerTime', function (msg) {
+                console.log('got uiTimerVal: ' + msg + ", " + pinTimer.getRunTime());
+                uiTimerVal = msg;
+            });
 
-                $("#editBounty").dialog({
-                    autoOpen: false
-                })
+            socket.on('clearTimer', function (msg) {
+                console.log('got clearTimer');
+            }); */
 
-                $("#pinTimer-start").on('click', function () {
-                    if (!started) {
-                        console.log("starting timer...");
-                        $("#pinTimer-start").html("Stop (Alt+/)");
-                        $("#pinTimer-clear").attr("disabled", true);
-                        $("#pinTimer-save").attr("disabled", true);
-                        started = true;
-                    }
-                    else {
-                        console.log("stoping timer...");
-                        $("#pinTimer-start").html("Start (Alt+/)");
-                        $("#pinTimer-clear").attr("disabled", false);
-                        $("#pinTimer-save").attr("disabled", false);
-                        started = false;
-                    }
+            pinTimer = new PinTimer(socket);
+            //h1.textContent = timeFormatter(0);
 
+
+            $("#editPlayer").dialog({
+                autoOpen: false
+            });
+
+            $("#editBounty").dialog({
+                autoOpen: false
+            })
+
+            $("#pinTimer-start").on('click', function () {
+                if (!started) {
+                    console.log("starting timer...");
+                    $("#pinTimer-start").html("Stop (Alt+/)");
+                    $("#pinTimer-clear").attr("disabled", true);
+                    $("#pinTimer-save").attr("disabled", true);
+                    started = true;
+
+                    pinTimer.start();
 
                     window['taco'].emit("startTimer", "startTimer");
-                });
+                }
+                else {
+                    console.log("stoping timer...");
 
-                $("#pinTimer-save").on('click', function () {
-                    console.log("saving run...");
-                    var pinRun = new PinRun(parseInt(currentPlayerId), currentObjectiveId, pinTimer.getRunTime());
-                    pinRunArray.push(pinRun);
+                    pinTimer.stop();
+                    started = false;
 
-                    var someRuns = getPinRuns(currentPlayerId, currentObjectiveId);
+                    if (currentBestRun != null) {
+                        //pinTimer.getSplit(currentBestRun.runTime);
+                        console.log(started);
+                        if (!started) {
+                            $("#splitDiff").show();
+                            var theText = pinTimer.getSplit(currentBestRun.runTime);
+                            console.log("theText: " + theText);
+                            $("#splitDiff").html(theText);
+                        }
+                    }
 
-                    console.log(pinRun);
-                    console.log(someRuns);
-                    console.log(getBestRun(currentObjectiveId));
+                    
+                    var theHtml = $("#pinTimerBoard").html();
 
-                    drawScoreboard(players);
-                });
+                    console.log(theHtml);
 
-                $("#pinTimer-clear").on('click', function () {
-                    console.log("clearing!!!");
-                    h1.textContent = timeFormatter(0);
-                    pinTimer.clear();
-                    window['taco'].emit("clearTimer", "clearTimer");
-                });
+                    window['taco'].emit("stopTimer", theHtml);
+                    //$("#pinTimerBoard").html
 
-            }
+                    //window['taco'].emit('saveState', $("#pinTimerBoard").html);
+
+
+                    $("#pinTimer-start").html("Start (Alt+/)");
+                    $("#pinTimer-clear").attr("disabled", false);
+                    $("#pinTimer-save").attr("disabled", false);
+
+
+
+                }
+            });
+
+            $("#pinTimer-save").on('click', function () {
+                console.log("saving run...");
+                var pinRun = new PinRun(parseInt(currentPlayerId), currentObjectiveId, pinTimer.getRunTime());
+                pinRunArray.push(pinRun);
+
+                // disable saving again...
+                $("#pinTimer-save").attr("disabled", true);
+                $("#pinTimer-clear").attr("disabled", true);
+
+                pinTimer.clear();
+
+                window['taco'].emit("clearTimer", "clearTimer");
+
+                $("#pinTimerBoard").html(drawScoreboard(players));
+
+                $("#splitDiff").html("&nbsp;");
+            });
+
+            $("#pinTimer-clear").on('click', function () {
+                console.log("clearing!!!");
+                //h1.textContent = timeFormatter(0);
+                pinTimer.clear();
+                window['taco'].emit("clearTimer", "clearTimer");
+            });
+
+        }
 
         );
 

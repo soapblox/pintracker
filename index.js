@@ -36,21 +36,32 @@ io.on('connection', function (socket) {
         io.emit('chat message', msg);
     });
 
-    socket.on('hello', function (msg) {
-        console.log("in hello");
-        io.emit('start', currentState);
+    socket.on('paint', function (msg) {
+        console.log('Index.js-paint');
+        io.emit('paint', currentState);
     });
 
     socket.on('start', function (msg) {
-        console.log('started');
-        console.log(msg);
+        console.log('Index.js-start');
+        // console.log(msg);
         currentState = msg;
         io.emit('start', msg);
     })
 
+    socket.on('saveState', function (msg) {
+        console.log('Index.js-saveState');
+        currentState = msg;
+    })
+
     socket.on('startTimer', function (msg) {
-        console.log('startTimer');
+        console.log('Index.js-startTimer');
         io.emit('startTimer', msg);
+    })
+
+    socket.on('stopTimer', function (msg) {
+        currentState = msg;
+        console.log('Index.js-stopTimer');
+        io.emit('stopTimer', currentState);
     })
 
     socket.on('uiTimerTime', function (msg) {
