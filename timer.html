@@ -59,8 +59,8 @@
 
             socket.on('clearTimer', function (msg) {
                 uiPinTimer.clear();
-                console.log("in clear timer");
-                $('#clear').trigger("click");
+                console.log("in clearTimer...");
+                $("#pin").html(msg);
             });
 
             socket.on('paint', function (msg) {
