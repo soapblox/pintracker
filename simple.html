@@ -697,6 +697,21 @@
 
             pinTimer = new PinTimer(socket);
 
+            socket.on('controllerStart', function(msg) {
+                console.log('on controller start');
+                $("#pinTimer-start").click();
+            });
+
+            socket.on('controllerStop', function(msg) {
+                console.log('on controller stop');
+                $("#pinTimer-start").click();
+            });
+
+            socket.on('controllerSave', function(msg) {
+                console.log('on controller save');
+                $("#pinTimer-save").click();
+            });            
+
 
             // ** EDITING DIAGLOGS **//
             $("#editPlayer").dialog({

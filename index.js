@@ -5,6 +5,31 @@ var io = require('socket.io')(http);
 
 var currentState = "";
 
+var aPressed = false;
+
+var GamePad = require('node-gamepad');
+var controller = new GamePad('logitech/gamepadf310');
+controller.connect();
+
+controller.on('A:press', function () {
+    console.log('A:press');
+
+    if (aPressed) {
+        console.log('send controllerStop');
+        io.emit('controllerStop', 'controllerStop');
+    }
+    else {
+        io.emit('controllerStart', 'controllerStart');
+    }
+
+    aPressed = !aPressed;
+});
+
+controller.on('B:press', function () {
+    console.log('B:press');
+    io.emit('controllerSave', 'controllerSave');
+});
+
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
@@ -32,10 +57,6 @@ io.on('connection', function (socket) {
         console.log('user disconnected');
     });
 
-    socket.on('chat message', function (msg) {
-        io.emit('chat message', msg);
-    });
-
     socket.on('paint', function (msg) {
         console.log('Index.js-paint');
         io.emit('paint', currentState);
@@ -48,11 +69,6 @@ io.on('connection', function (socket) {
         io.emit('start', msg);
     })
 
-    socket.on('saveState', function (msg) {
-        console.log('Index.js-saveState');
-        currentState = msg;
-    })
-
     socket.on('startTimer', function (msg) {
         console.log('Index.js-startTimer');
         io.emit('startTimer', msg);
@@ -62,11 +78,6 @@ io.on('connection', function (socket) {
         currentState = msg;
         console.log('Index.js-stopTimer');
         io.emit('stopTimer', currentState);
-    })
-
-    socket.on('uiTimerTime', function (msg) {
-        console.log('uiTimerTime:' + msg);
-        io.emit('uiTimerTime', msg);
     })
 
     socket.on('clearTimer', function (msg) {
