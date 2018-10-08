@@ -292,7 +292,7 @@
             var pinRunToDeleteId = parseInt($('input[name=editPinRunId]').val());
 
             pinTracker.deletePinRunById(pinRunToDeleteId);
-            
+
             repaint();
 
             $("#editPinRun").dialog("close");
@@ -465,17 +465,79 @@
         }
 
         function setTimerButtonState() {
-            if (pinTracker.currentObjectiveId != null &&  pinTracker.currentPlayerId != null) {
+            if (pinTracker.currentObjectiveId != null && pinTracker.currentPlayerId != null) {
                 console.log("turn on start button")
                 $("#pinTimer-start").attr("disabled", false);
             }
         }
 
+        function canStartStopwatch() {
+            console.log('in canStartStopwatch');
+            if (pinTracker.currentObjectiveId != null && pinTracker.currentPlayerId != null) {
+                return true;
+            }
+
+            return false;
+        }
+
+        function canChange() {
+            // we can only change objectives/players when start is enabled, and save/clear is disabled
+            if ($("#pinTimer-start").attr("disabled") == undefined
+                && $("#pinTimer-save").attr("disabled") == 'disabled'
+                && $("#pinTimer-clear").attr("disabled") == 'disabled') {
+                
+                if (stopwatch.running) {
+                    console.log('stopwatch running... not allowed to change');
+                    return false;
+                }
+
+                console.log('allowed to change');
+                return true;
+            }
+
+            // or when they are ALL disabled
+            if ($("#pinTimer-start").attr("disabled") == 'disabled'
+                && $("#pinTimer-save").attr("disabled") == 'disabled'
+                && $("#pinTimer-clear").attr("disabled") == 'disabled') {
+                console.log('allowed to change... all disabled');
+                return true;
+            }
+
+            console.log('not allowed to change..');
+            return false;
+        }
+
+        function canSave() {
+            console.log('in canSave "' + $("#pinTimer-save").attr("disabled") + '"');
+            // make sure objectives are set
+            if (pinTracker.currentObjectiveId != null && pinTracker.currentPlayerId != null) {
+                // and if the save button is enabled..
+                if ($("#pinTimer-save").attr("disabled") == undefined) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function canClear() {
+            console.log('in canClear "' + $("#pinTimer-clear").attr("disabled") + '"');
+            // make sure objectives are set
+            if (pinTracker.currentObjectiveId != null && pinTracker.currentPlayerId != null) {
+                // and if the clear button is enabled..
+                if ($("#pinTimer-clear").attr("disabled") == undefined) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         function applyBounty(pId, bId) {
             console.log("in applyBounty, playerId: " + pId + ", bountyId: " + bId);
-            
+
             pinTracker.applyBounty(pId, bId);
-            
+
             repaint();
         }
 
@@ -696,22 +758,81 @@
             window['taco'] = socket;
 
             stopwatch = new Stopwatch();
-            //pinTimer = new PinTimer(socket);
 
-            socket.on('controllerStart', function(msg) {
+            socket.on('controllerStart', function (msg) {
                 console.log('on controller start');
-                $("#pinTimer-start").click();
+                if (canStartStopwatch()) {
+                    console.log('allowed to start...');
+                    $("#pinTimer-start").click();
+                }
+                else {
+                    console.log('not allowed to start...');
+                }
             });
 
-            socket.on('controllerStop', function(msg) {
+            socket.on('controllerStop', function (msg) {
                 console.log('on controller stop');
                 $("#pinTimer-start").click();
             });
 
-            socket.on('controllerSave', function(msg) {
+            socket.on('controllerSave', function (msg) {
                 console.log('on controller save');
-                $("#pinTimer-save").click();
-            });            
+                if (canSave()) {
+                    console.log('allowed to save...');
+                    $("#pinTimer-save").click();
+                }
+                else {
+                    console.log('not allowed to save...');
+                }
+
+            });
+
+            socket.on('controllerClear', function (msg) {
+                console.log('on controller clear...');
+                if (canClear()) {
+                    console.log('allowed to clear...');
+                    $("#pinTimer-clear").click();
+                }
+                else {
+                    console.log('not allowed to clear...');
+                }
+            })
+
+            socket.on('playerLeft', function (msg) {
+                console.log('on playerLeft...');
+                if (canChange()) {
+                    pinTracker.shiftPlayer(-1);
+                    repaint();
+                    setTimerButtonState();
+                }
+            })
+
+            socket.on('playerRight', function (msg) {
+                console.log('on playerRight...');
+                if (canChange()) {
+                    pinTracker.shiftPlayer(1);
+                    repaint();
+                    setTimerButtonState();
+                }
+            })
+
+            socket.on('objectiveLeft', function (msg) {
+                console.log('on objectiveLeft...');
+                if (canChange()) {
+                    pinTracker.shiftObjective(-1);
+                    repaint();
+                    setTimerButtonState();
+                }
+            })
+
+            socket.on('objectiveRight', function (msg) {
+                console.log('on objectiveRight...');
+                if (canChange()) {
+                    pinTracker.shiftObjective(1);
+                    repaint();
+                    setTimerButtonState();
+                }
+            })
 
 
             // ** EDITING DIAGLOGS **//

@@ -55,7 +55,7 @@ class Stopwatch {
 
     getRunTime() {
         var millis = (this.times[0] * (1000 * 60)) + (this.times[1] * 1000) + (this.times[2]);
-        console.log(millis);
+        //console.log(millis);
         return millis;
     }
 
@@ -67,11 +67,11 @@ class Stopwatch {
 
         //console.log("splitDif: " + splitDif);
         if (splitDif > 0) {
-            console.log("green -" + timeFormatter(splitDif));
+            //console.log("green -" + timeFormatter(splitDif));
             returnString = "<span class='splitGreen'>-" + timeFormatter(splitDif) + "</span>"
         }
         else {
-            console.log("red +" + timeFormatter(splitDif * -1));
+            //console.log("red +" + timeFormatter(splitDif * -1));
             returnString = "<span class='splitRed'>+" + timeFormatter(splitDif * -1) + "</span>"
         }
 
