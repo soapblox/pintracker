@@ -3,7 +3,7 @@
 <head>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="score.css">
-    <script src="timer.js"></script>
+    <script src="stopwatch.js"></script>
     <script src="pinTracker.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
@@ -16,7 +16,7 @@
     </style>
 
     <script>
-        var pinTimer = null;
+        var stopwatch = null;
         var activeMode = "bountyBot";
         var started = false;
 
@@ -695,7 +695,8 @@
             var socket = io();
             window['taco'] = socket;
 
-            pinTimer = new PinTimer(socket);
+            stopwatch = new Stopwatch();
+            //pinTimer = new PinTimer(socket);
 
             socket.on('controllerStart', function(msg) {
                 console.log('on controller start');
@@ -733,7 +734,7 @@
                 if (!started) {
                     console.log("starting timer...");
 
-                    pinTimer.start();
+                    stopwatch.start();
                     started = true;
 
                     $("#pinTimer-start").html("Stop (Alt+/)");
@@ -746,15 +747,14 @@
                 else {
                     console.log("stoping timer...");
 
-                    pinTimer.stop();
+                    stopwatch.stop();
                     started = false;
 
                     if (pinTracker.currentBestRun != null) {
-                        //pinTimer.getSplit(currentBestRun.runTime);
-                        console.log(started);
+
                         if (!started) {
                             $("#splitDiff").show();
-                            var theText = pinTimer.getSplit(pinTracker.currentBestRun.runTime);
+                            var theText = stopwatch.getSplit(pinTracker.currentBestRun.runTime);
                             console.log("theText: " + theText);
                             $("#splitDiff").html(theText);
                         }
@@ -779,7 +779,7 @@
                 console.log("pinTimer-save...");
 
                 // save the run
-                var pinRun = new PinRun(parseInt(pinTracker.currentPlayerId), pinTracker.currentObjectiveId, pinTimer.getRunTime());
+                var pinRun = new PinRun(parseInt(pinTracker.currentPlayerId), pinTracker.currentObjectiveId, stopwatch.getRunTime());
                 pinTracker.addPinRun(pinRun);
 
                 // disable saving again...
@@ -787,7 +787,7 @@
                 $("#pinTimer-clear").attr("disabled", true);
 
                 // clear the timer
-                pinTimer.clear();
+                stopwatch.clear();
 
                 // let server know timer has been cleared
                 window['taco'].emit("clearTimer", "clearTimer");
@@ -816,7 +816,7 @@
                 $("#splitDiff").html("&nbsp;");
 
                 // clear the timer
-                pinTimer.clear();
+                stopwatch.clear();
 
                 // get the current picture of the html
                 var theHtml = $("#pinTimerBoard").html();
