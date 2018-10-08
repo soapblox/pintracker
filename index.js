@@ -5,34 +5,49 @@ var io = require('socket.io')(http);
 
 var currentState = "";
 
-var aPressed = false;
-
 var GamePad = require('node-gamepad');
 var controller = new GamePad('logitech/gamepadf310');
 
 try {
     controller.connect();
+    console.log("connected to controller:");
 } catch (e) {
     console.log("can't find controller...")
 }
 
 controller.on('A:press', function () {
     console.log('A:press');
-
-    if (aPressed) {
-        console.log('send controllerStop');
-        io.emit('controllerStop', 'controllerStop');
-    }
-    else {
-        io.emit('controllerStart', 'controllerStart');
-    }
-
-    aPressed = !aPressed;
+    io.emit('controllerStart', 'controllerStart');
 });
 
 controller.on('B:press', function () {
     console.log('B:press');
     io.emit('controllerSave', 'controllerSave');
+});
+
+controller.on('X:press', function () {
+    console.log('X:press');
+    io.emit('controllerClear', 'controllerClear');
+});
+
+controller.on('LB:press', function () {
+    console.log('LB:press');
+    io.emit('playerLeft', 'playerLeft');
+});
+
+controller.on('RB:press', function () {
+    console.log('RB:press');
+    io.emit('playerRight', 'playerRight');
+});
+
+controller.on('LT:press', function () {
+    console.log('LT:press');
+    io.emit('objectiveLeft', 'objectiveLeft');
+});
+
+controller.on('RT:press', function () {
+    console.log('RT:press');
+    io.emit('objectiveRight', 'objectiveRight');
 });
 
 app.get('/', function (req, res) {

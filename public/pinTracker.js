@@ -46,6 +46,76 @@ class PinTracker {
         }
     }
 
+    shiftPlayer(theShift) {
+        var currentPlayerAtIndex = 0;
+        var newIndexOfPlayer = 0;
+        // ok, let's find the current index...
+        for (var i = 0; i < this.players.length; i++) {
+            if (this.players[i].playerId == this.currentPlayerId) {
+                currentPlayerAtIndex = i;
+                console.log("currentplayer at index: " + currentPlayerAtIndex);
+            }
+        }
+
+        // shrink the index by 1 to get new index
+        newIndexOfPlayer = currentPlayerAtIndex + theShift;
+
+        // if it's less than zero, we are at the first entry, so wrap around, and go to the last index
+        if (newIndexOfPlayer < 0) {
+            newIndexOfPlayer = this.players.length - 1;
+        }
+
+        // if it's equal to the length of the array, we are at the last entry, so go to the first
+        if (newIndexOfPlayer == this.players.length) {
+            newIndexOfPlayer = 0;
+        }
+
+        console.log("new player should be:");
+        console.log(this.players[newIndexOfPlayer]);
+
+        if (this.players.length > 0) {
+            this.currentPlayerId = this.players[newIndexOfPlayer].playerId;
+        }
+        else {
+            console.log('no players defined, unable to move...');
+        }
+    }
+
+    shiftObjective(theShift) {
+        var currentObjectiveAtIndex = 0;
+        var newIndexOfObjective = 0;
+        // ok, let's find the current index...
+        for (var i = 0; i < this.objectiveArray.length; i++) {
+            if (this.objectiveArray[i].objectiveId == this.currentObjectiveId) {
+                currentObjectiveAtIndex = i;
+                console.log("currentObjectiveAtIndex: " + currentObjectiveAtIndex);
+            }
+        }
+
+        // shrink the index by 1 to get new index
+        newIndexOfObjective = currentObjectiveAtIndex + theShift;
+
+        // if it's less than zero, we are at the first entry, so wrap around, and go to the last index
+        if (newIndexOfObjective < 0) {
+            newIndexOfObjective = this.objectiveArray.length - 1;
+        }
+
+        // if it's equal to the length of the array, we are at the last entry, so go to the first
+        if (newIndexOfObjective == this.objectiveArray.length) {
+            newIndexOfObjective = 0;
+        }
+
+        console.log("new objective should be:");
+        console.log(this.objectiveArray[newIndexOfObjective]);
+
+        if (this.objectiveArray.length > 0) {
+            this.currentObjectiveId = this.objectiveArray[newIndexOfObjective].objectiveId;
+        }
+        else {
+            console.log('no objectives defined, unable to move...');
+        }
+    }
+
     /* Bounty Section */
     addBounty(theBounty) {
         this.bountyArray.push(theBounty);
@@ -216,7 +286,7 @@ class PinTracker {
     getLastRuns(numberOfRuns) {
         var runs = [];
 
-        console.log("getLastRuns...");
+        //console.log("getLastRuns...");
 
         // we want numberOfRuns, but we ignore the deleted ones
         var actualRunsCollected = 0;
