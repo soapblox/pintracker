@@ -3,7 +3,7 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
-    <script src="timer.js"></script>
+    <script src="stopwatch.js"></script>
     <link rel="stylesheet" href="score.css">
 </head>
 
@@ -24,22 +24,21 @@
     <script>
         $(function () {
             var socket = io();
-            uiPinTimer = new PinTimer();
+            stopwatch = new Stopwatch();
 
             socket.on('startTimer', function (msg) {
-                uiPinTimer.start();
+                stopwatch.start();
             });
 
             socket.on('stopTimer', function (msg) {
                 console.log("in stop timer...");
-                uiPinTimer.stop();
-                console.log(msg);
+                stopwatch.stop();                
                 $("#pin").html(msg);
-                //socket.emit('paint', 'paint');
+                
             })
 
             socket.on('clearTimer', function (msg) {
-                uiPinTimer.clear();
+                stopwatch.clear();
                 console.log("in clearTimer...");
                 $("#pin").html(msg);
             });

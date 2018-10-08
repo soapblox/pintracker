@@ -9,7 +9,12 @@ var aPressed = false;
 
 var GamePad = require('node-gamepad');
 var controller = new GamePad('logitech/gamepadf310');
-controller.connect();
+
+try {
+    controller.connect();
+} catch (e) {
+    console.log("can't find controller...")
+}
 
 controller.on('A:press', function () {
     console.log('A:press');
