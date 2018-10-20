@@ -221,6 +221,12 @@ class PinTracker {
 
         // find the quickest run in the mix...
         for (var i = 0; i < objectiveRuns.length; i++) {
+
+            if (objectiveRuns[i].dnf) {
+                console.log("dnf run... continue..");
+                continue;
+            }
+
             if (bestTime == 0) {
                 bestRun = objectiveRuns[i];
                 bestTime = objectiveRuns[i].runTime;
@@ -242,6 +248,12 @@ class PinTracker {
 
         // find the quickest run in the mix...
         for (var i = 0; i < playerRuns.length; i++) {
+
+            if (playerRuns[i].dnf) {
+                console.log("dnf run... continue..");
+                continue;               
+            }
+
             if (bestTime == 0) {
                 bestRun = playerRuns[i];
                 bestTime = playerRuns[i].runTime;
@@ -334,11 +346,12 @@ class Objective {
 }
 
 class PinRun {
-    constructor(playerId, objectiveId, runTime) {
+    constructor(playerId, objectiveId, runTime, didNotFinish) {
         this.playerId = playerId;
         this.objectiveId = objectiveId;
         this.runTime = runTime;
         this.pinRunId = pinRunId++;
         this.deleted = false;
+        this.dnf = didNotFinish;
     }
 }
