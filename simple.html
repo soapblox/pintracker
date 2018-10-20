@@ -87,7 +87,8 @@
                             <div class="adminBox">
                                 <button id="pinTimer-start" accesskey="/" disabled="true">Start (Alt+/)</button>
                                 <button id="pinTimer-save" accesskey="-" disabled="true">Save (Alt+-)</button>
-                                <button id="pinTimer-clear" accesskey="*" disabled="true">Clear (Alt+*)</button>
+                                <button id="pinTimer-clear" accesskey="*" disabled="true">Clear (Alt+*)</button><br />
+                                <input type="checkbox" id="pinTimer-dnf" name="pinTimer-dnf" disabled="true"> - <label for="pinTimer-dnf">Did Not Finish</label>
                                 <div id="objectiveUi"></div>
                             </div>
                             <br />
@@ -120,6 +121,7 @@
                 <audio controls>
                     <source src="https://www.w3schools.com/Html/horse.mp3" type="audio/mpeg">
                 </audio>
+                <div id="canvasDiv"></div>
             </div>
         </div>
 
@@ -665,7 +667,14 @@
 
             if (previousRuns != undefined && previousRuns.length > 0) {
                 for (var i = 0; i < previousRuns.length; i++) {
-                    previousRunsString += (i + 1) + ". " + timeFormatter(previousRuns[i].runTime) + "<br />";
+                    var pinRunString = "";
+                    if (previousRuns[i].dnf) {
+                        pinRunString = "DNF";
+                    }
+                    else {
+                        pinRunString = timeFormatter(previousRuns[i].runTime);
+                    }
+                    previousRunsString += (i + 1) + ". " + pinRunString + "<br />";
                 }
             }
             else {
@@ -784,7 +793,17 @@
                 else {
                     console.log('not allowed to save...');
                 }
+            });
 
+            socket.on('controllerDnf', function (msg) {
+                console.log('on controller DNF');
+                if (canSave()) {
+                    console.log('allowed to save, so we can DNF check...');
+                    $("#pinTimer-dnf").click();
+                }
+                else {
+                    console.log('not allowed to save, so no DNF allowed...');
+                }
             });
 
             socket.on('controllerClear', function (msg) {
@@ -861,6 +880,8 @@
                     $("#pinTimer-start").html("Stop (Alt+/)");
                     $("#pinTimer-clear").attr("disabled", true);
                     $("#pinTimer-save").attr("disabled", true);
+                    $("#pinTimer-dnf").attr("disabled", true);
+                    $("#pinTimer-dnf").prop("checked", false);
 
                     window['taco'].emit("startTimer", "startTimer");
 
@@ -890,8 +911,7 @@
                     $("#pinTimer-start").html("Start (Alt+/)");
                     $("#pinTimer-clear").attr("disabled", false);
                     $("#pinTimer-save").attr("disabled", false);
-
-
+                    $("#pinTimer-dnf").attr("disabled", false);
 
                 }
             });
@@ -900,12 +920,14 @@
                 console.log("pinTimer-save...");
 
                 // save the run
-                var pinRun = new PinRun(parseInt(pinTracker.currentPlayerId), pinTracker.currentObjectiveId, stopwatch.getRunTime());
+                var pinRun = new PinRun(parseInt(pinTracker.currentPlayerId), pinTracker.currentObjectiveId, stopwatch.getRunTime(), $('#pinTimer-dnf').is(':checked'));
                 pinTracker.addPinRun(pinRun);
 
                 // disable saving again...
                 $("#pinTimer-save").attr("disabled", true);
                 $("#pinTimer-clear").attr("disabled", true);
+                $("#pinTimer-dnf").attr("disabled", true);
+                $("#pinTimer-dnf").prop("checked", false);
 
                 // clear the timer
                 stopwatch.clear();
@@ -930,7 +952,9 @@
 
                 // disable saving again...
                 $("#pinTimer-save").attr("disabled", true);
-                $("#pinTimer-clear").attr("disabled", true)
+                $("#pinTimer-clear").attr("disabled", true);
+                $("#pinTimer-dnf").attr("disabled", true);
+                $("#pinTimer-dnf").prop("checked", false);
 
                 // clean upthe HTML
                 $("#speedRunTimer").html(timeFormatter(0));

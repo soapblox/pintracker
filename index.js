@@ -30,6 +30,11 @@ controller.on('X:press', function () {
     io.emit('controllerClear', 'controllerClear');
 });
 
+controller.on('Y:press', function () {
+    console.log('Y:press');
+    io.emit('controllerDnf', 'controllerDnf');
+});
+
 controller.on('LB:press', function () {
     console.log('LB:press');
     io.emit('playerLeft', 'playerLeft');
