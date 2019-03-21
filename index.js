@@ -6,7 +6,7 @@ var io = require('socket.io')(http);
 var currentState = "";
 
 var GamePad = require('node-gamepad');
-var controller = new GamePad('logitech/gamepadf310');
+var controller = new GamePad('logitech/gamepadf710');
 
 try {
     controller.connect();
